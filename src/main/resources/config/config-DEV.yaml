@@ -1,0 +1,16 @@
+# heritage-exp-app Configuration
+
+app:
+  id: "20734123"
+  host: "0.0.0.0"
+  port: "8082"
+  basePath: "/sales/prc/v1/*"
+
+sales-db-sys-app:
+  host: "0.0.0.0"
+  port: "8085"
+  basePath: "/sales/db/sys/v1"
+  path:
+    transaction: "/transaction"
+    transactionItems: "/transaction/items"
+  responseTimeOut: "10000"

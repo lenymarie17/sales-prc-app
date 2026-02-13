@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog/>
+  <types:enrichment select="#5b99eccd-ea3f-43a6-8ac3-0c2f11acd960"/>
+  <types:enrichment select="#d2477807-777a-4f4a-8aeb-eec9dd6dcbd6"/>
+  <types:enrichment select="#e54e2565-e1d2-4d81-8e0d-373a0ffe315c"/>
+  <types:enrichment select="#3016a804-1b67-4309-a8f7-965c2b5b0ef3"/>
+  <types:enrichment select="#eacb22f8-8976-47e4-ae88-650a2dbf2a6c"/>
+  <types:enrichment select="#866fe170-3d13-429d-84ce-9c054b716d20"/>
+</types:mule>

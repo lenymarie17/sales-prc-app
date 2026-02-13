@@ -1,0 +1,20 @@
+{
+    "transactionId": "Blue-002",
+    "source": "Blue App",
+    "name": "John Doe",
+    "address": "#5 Road, Bambang, Pasig City",
+    "age": 21,
+    "gender": "M",
+    "phone": "+639177777787",
+    "purchasedItems": [
+        {
+            "itemId": "B002",
+            "name": "Harry Potter and the Chamber of Secrets",
+            "price": 998,
+            "quantity": 1
+        }
+    ],
+    "total": 998,
+    "modeOfPayment": "Credit Card",
+    "timestamp": "2025-09-29T10:15:00Z"
+}

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<sub-flow name="impl-create-sale-transaction-subflow" doc:id="b5e2e6a5-e6e8-4581-a8b6-c1918be109b8" >
+		<logger level="INFO" doc:name="FLOW - START impl-create-sale-transaction-subflow" doc:id="723117c0-d0a0-452d-b91d-91f17bbfbe9b" message="FLOW - START impl-create-sale-transaction-subflow"/>
+		<ee:transform doc:name="Set var transaction, transactionItems" doc:id="f32c9258-3943-4cd5-b1cc-2abe60b0e80b" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="transaction" ><![CDATA[%dw 2.0
+output application/json
+---
+payload - "purchasedItems"]]></ee:set-variable>
+				<ee:set-variable variableName="transactionItems" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "transactionId": payload.transactionId,
+  "items": payload.purchasedItems
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="impl-create-db-sale-transaction-subflow" doc:id="b5584c3a-d543-4b37-8c82-378afc10b0bd" name="impl-create-db-sale-transaction-subflow"/>
+		<flow-ref doc:name="impl-create-db-sale-transaction-items-subflow" doc:id="c492cd48-7bf2-4c2d-993d-3e91e52110db" name="impl-create-db-sale-transaction-items-subflow"/>
+		<logger level="INFO" doc:name="FLOW - END impl-create-sale-transaction-subflow" doc:id="24469c06-6f0d-46cc-b63e-5e9e60451920" message="FLOW - END impl-create-sale-transaction-subflow" />
+	</sub-flow>
+	<sub-flow name="impl-create-db-sale-transaction-subflow" doc:id="e5b7a05f-18df-4763-b3f9-b0021b776341" >
+		<logger level="INFO" doc:name="FLOW - impl-create-db-sale-transaction-subflow" doc:id="8dd6fb1f-dd45-4d11-8e73-77e7c70c0849" message="FLOW - impl-create-db-sale-transaction-subflow" />
+		<ee:transform doc:name="Set Transaction Request Payload" doc:id="e8e0ce8b-aa75-4d58-b7d3-90d0d8e7fe74">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.transaction]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="path" ><![CDATA[%dw 2.0
+output application/json
+import p from Mule
+---
+p('sales-db-sys-app.path.transaction')]]></ee:set-variable>
+				<ee:set-variable variableName="method" ><![CDATA["POST"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sales-db-sys-app-http-request-subflow" doc:id="a7f6df2b-a742-4622-8d35-448e22ca0223" name="sales-db-sys-app-http-request-subflow" />
+		<validation:is-true doc:name="Is statusCode == 201" doc:id="3e1c2908-be16-4537-a776-6d1dd1ae71e5" expression="#[payload.statusCode == 201]" >
+			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:SALES-DB-SYS_ERROR" />
+		</validation:is-true>
+	</sub-flow>
+	<sub-flow name="impl-create-db-sale-transaction-items-subflow" doc:id="501bc374-73c2-45c4-a1d7-2fc343b1a297" >
+		<logger level="INFO" doc:name="FLOW - impl-create-db-sale-transaction-subflow" doc:id="8867a9ef-b9eb-4567-b9de-75a4b0b7dee3" message="FLOW - impl-create-db-sale-transaction-subflow" />
+		<ee:transform doc:name="Set Transaction Items Request Payload" doc:id="5b99eccd-ea3f-43a6-8ac3-0c2f11acd960">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.transactionItems]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+					<ee:set-variable variableName="path"><![CDATA[%dw 2.0
+output application/json
+import p from Mule
+---
+p('sales-db-sys-app.path.transactionItems')]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<try doc:name="Try" doc:id="9a5d1a74-0d7f-438a-86c2-78f459373d33" >
+			<flow-ref doc:name="sales-db-sys-app-http-request-subflow" doc:id="03f8a1c0-3067-466f-ac7a-f6867cf2b417" name="sales-db-sys-app-http-request-subflow" />
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2f5a37a0-49b5-46b4-84f9-ef13e20a6a3e" >
+					<flow-ref doc:name="impl-delete-db-sale-transaction-subflow" doc:id="945a49dc-c632-4035-8ed8-0fa85bd4db1d" name="impl-delete-db-sale-transaction-subflow"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="impl-delete-db-sale-transaction-subflow" doc:id="4a553fbc-38fd-47e5-94cc-339a2e45c86c" >
+		<ee:transform doc:name="Set Transaction Delete Request Payload" doc:id="d2477807-777a-4f4a-8aeb-eec9dd6dcbd6">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="method"><![CDATA["DELETE"]]></ee:set-variable>
+							<ee:set-variable variableName="queryParams"><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"transactionId": vars.transaction.transactionId
+}]]></ee:set-variable>
+				<ee:set-variable variableName="path" ><![CDATA[%dw 2.0
+output application/json
+import p from Mule
+---
+p('sales-db-sys-app.path.transaction')]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+		<flow-ref doc:name="sales-db-sys-app-http-request-subflow" doc:id="2f840bda-7f6d-41ac-83d7-09aa16f2f460" name="sales-db-sys-app-http-request-subflow" />
+		<ee:transform doc:name="Set API Response" doc:id="d230c0c4-ca69-48a3-ba0e-ec5cd9d7c0d0">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Failed to save record"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+	</sub-flow>
+</mule>

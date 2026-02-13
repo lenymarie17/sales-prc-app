@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="sales-db-sys-app-http-request-subflow" doc:id="40e1360c-b405-4ea6-8ed9-c11962b3f03d" >
+		<logger level="DEBUG" doc:name="FLOW - START sales-db-sys-app-http-request-subflow" doc:id="53f286b0-50d6-4dd0-9d66-4ac44651ffad" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"flow": "FLOW - START supabase-db-api-http-request-subflow",&#10;	"payload": payload,&#10;	"queryParams": vars.queryParams&#10;}]' />
+		<http:request doc:name="Request sales-db-sys-app" doc:id="7d1ae6c6-bc3c-4a0b-8fac-6fde03e0a2b8" config-ref="sales-db-sys-app_HTTP_Request_config" method="#[vars.method]" path="#[vars.path]" sendCorrelationId="ALWAYS" correlationId="#[correlationId]" >
+			<http:query-params ><![CDATA[#[vars.queryParams default {}]]]></http:query-params>
+		</http:request>
+		<logger level="DEBUG" doc:name="FLOW - END sales-db-sys-app-http-request-subflow" doc:id="ac734f03-a4bd-4a6b-9326-86101fa28400" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"flow": "FLOW - START supabase-db-api-http-request-subflow",&#10;	"payload": payload,&#10;	"queryParams": vars.queryParams&#10;}]' />
+	</sub-flow>
+</mule>

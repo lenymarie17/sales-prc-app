@@ -1,0 +1,14 @@
+{
+  "data": {
+    "transactionId": "B10001",
+    "source": "Blue App",
+    "customerName": "Nicole Blue",
+    "deliveryAddress": "5 St. Barangay 456, Manila",
+    "customerAge": 29,
+    "customerGender": "F",
+    "customerContact": "+639999999789",
+    "totalAmount": 3398,
+    "paymentType": "Cash",
+    "transactionDate": "2025-09-30T10:00:00Z"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "itemId": "B10001-001",
+      "name": "The Chronicles of Narnia: Prince Caspian",
+      "price": 1499,
+      "quantity": 1
+    },
+    {
+      "itemId": "B10001-002",
+      "name": "Lord of the Rings: The Fellowship of the Ring",
+      "price": 1899,
+      "quantity": 1
+    }
+  ]
+}

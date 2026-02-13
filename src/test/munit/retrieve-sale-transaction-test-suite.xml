@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="   http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd   http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd   http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="retrieve-sale-transaction-test-suite.xml">
+		<munit:parameterizations >
+			<munit:parameterization name="common-configs" >
+				<munit:parameters >
+					<munit:parameter propertyName="app.env" value="DEV" />
+					<munit:parameter propertyName="app.key" value="cambridge123456789" />
+				</munit:parameters>
+			</munit:parameterization>
+		</munit:parameterizations>
+	</munit:config>
+	<munit:test description="Test" doc:id="8a4235cc-5332-4c31-bbe1-b20c7decdbcf" name="new-test-suite-get:\transaction:sales-prc-app-configTest">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock sales-db-sys-app GET /transaction" doc:id="9e42c542-2fa7-49b3-b9da-add51a64a78e" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sales-db-sys-app-http-request-subflow" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="b5584c3a-d543-4b37-8c82-378afc10b0bd" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://sales-db-sys-app/retrieveSalesTransactionRs.json', 'application/json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock sales-db-sys-app GET /transaction/items" doc:id="f823c6be-f464-40f0-8dc7-7fd4969bbd79" processor="flow-ref" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sales-db-sys-app-http-request-subflow" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="0d30529b-447f-424f-bbff-c1bef2bac1a8" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://sales-db-sys-app/retrieveSalesTransactionItemsRs.json', 'application/json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<munit:set-event doc:name="Set Event" doc:id="af014cc6-8e2e-4c06-a49d-7183f6ee97d2">
+				<munit:attributes value="#[output application/json --- readUrl('classpath://request-payloads/retrieveSalesTransactionRq.json', 'application/json')]" />
+			</munit:set-event>
+			<flow-ref doc:id="40208a87-a893-4904-a085-2b003d1fd08f" doc:name="Flow-ref to get:\transaction:sales-prc-app-config" name="get:\transaction:sales-prc-app-config"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:verify-call doc:name="Verify call - Flow End" doc:id="5fec8425-a0d4-43c6-b3b7-49b20b126927" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="FLOW - END impl-retrieve-sale-transaction-subflow" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+		</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+</mule>

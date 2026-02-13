@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="sales-prc-app-httpListenerConfig">
+        <http:listener-connection host="${app.host}" port="${app.port}" />
+    </http:listener-config>
+    <apikit:config name="sales-prc-app-config" api="resource::3f2c2f8f-17f9-4bfd-80fb-97b4803eb728:sales-prc-app:1.0.6:raml:zip:sales-prc-app.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="sales-prc-app-main">
+        <http:listener config-ref="sales-prc-app-httpListenerConfig" path="${app.basePath}">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="sales-prc-app-config" />
+        <error-handler ref="sales-prc-app-error-handler" />
+    </flow>
+    <flow name="get:\transaction:sales-prc-app-config">
+        <flow-ref doc:name="impl-retrieve-sale-transaction-subflow" doc:id="f930664c-2ced-44e2-bf89-cc4f03c34c0d" name="impl-retrieve-sale-transaction-subflow" />
+    </flow>
+    <flow name="post:\transaction:application\json:sales-prc-app-config">
+        <flow-ref doc:name="impl-create-sale-transaction-subflow" doc:id="d30c7ebd-0472-4e6d-8f89-de741f5dafec" name="impl-create-sale-transaction-subflow" />
+    </flow>
+</mule>

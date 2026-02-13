@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<sub-flow name="impl-retrieve-sale-transaction-subflow" doc:id="b5e2e6a5-e6e8-4581-a8b6-c1918be109b8" >
+		<logger level="INFO" doc:name="FLOW - START impl-retrieve-sale-transaction-subflow" doc:id="723117c0-d0a0-452d-b91d-91f17bbfbe9b" message="FLOW - START impl-retrieve-sale-transaction-subflow"/>
+		<ee:transform doc:name="Set Request Payload" doc:id="3016a804-1b67-4309-a8f7-965c2b5b0ef3">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="path"><![CDATA[%dw 2.0
+output application/json
+import p from Mule
+---
+p('sales-db-sys-app.path.transaction')]]></ee:set-variable>
+				<ee:set-variable variableName="method"><![CDATA["GET"]]></ee:set-variable>
+				<ee:set-variable variableName="queryParams" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"transactionId": attributes.queryParams.transactionId
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sales-db-sys-app-http-request-subflow" doc:id="b5584c3a-d543-4b37-8c82-378afc10b0bd" name="sales-db-sys-app-http-request-subflow"/>
+		<choice doc:name="HAS data?" doc:id="13de7a71-5a00-4980-b4e0-00d045aaa3d8" >
+			<when expression="#[!isEmpty(payload.data)]">
+				<ee:transform doc:name="Set var transaction, path" doc:id="eacb22f8-8976-47e4-ae88-650a2dbf2a6c" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="transaction" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.data]]></ee:set-variable>
+						<ee:set-variable variableName="path" ><![CDATA[%dw 2.0
+output application/json
+import p from Mule
+---
+p('sales-db-sys-app.path.transactionItems')]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="sales-db-sys-app-http-request-subflow" doc:id="0d30529b-447f-424f-bbff-c1bef2bac1a8" name="sales-db-sys-app-http-request-subflow" />
+				<ee:transform doc:name="Set API Response" doc:id="feafc8ea-1f61-4706-85ca-74941ed8eb01" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.transaction ++ "items": payload.data]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Set No Record Found Error Response" doc:id="a60f1610-5792-4e6f-b4ff-b1c06b3d5f47" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "No Record Found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="FLOW - END impl-retrieve-sale-transaction-subflow" doc:id="24469c06-6f0d-46cc-b63e-5e9e60451920" message="FLOW - END impl-retrieve-sale-transaction-subflow" />
+	</sub-flow>
+</mule>
