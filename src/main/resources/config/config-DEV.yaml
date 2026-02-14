@@ -1,14 +1,14 @@
-# heritage-exp-app Configuration
+# sales-prc-app Configuration
 
 app:
   id: "20734123"
   host: "0.0.0.0"
-  port: "8082"
+  port: "8081"
   basePath: "/sales/prc/v1/*"
 
 sales-db-sys-app:
-  host: "0.0.0.0"
-  port: "8085"
+  host: "sales-db-sys-app-90stud.5sc6y6-3.usa-e2.cloudhub.io"
+  port: "443"
   basePath: "/sales/db/sys/v1"
   path:
     transaction: "/transaction"
