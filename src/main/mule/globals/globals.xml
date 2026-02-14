@@ -15,5 +15,9 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	</secure-properties:config>
 	<http:request-config name="sales-db-sys-app_HTTP_Request_config" doc:name="HTTP Request config" doc:id="df6dc87f-6790-4108-bb69-717737058621" basePath="${sales-db-sys-app.basePath}" responseTimeout="${sales-db-sys-app.responseTimeOut}" >
 		<http:request-connection host="${sales-db-sys-app.host}" port="${sales-db-sys-app.port}" />
+		<http:default-headers >
+			<http:default-header key="client-id" value="${secure::sales-db-sys-app.client-id}" />
+			<http:default-header key="client-secret" value="${secure::sales-db-sys-app.client-secret}" />
+		</http:default-headers>
 	</http:request-config>
 </mule>
